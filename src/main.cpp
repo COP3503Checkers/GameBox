@@ -1,6 +1,8 @@
-using namespace std;
 #include <cmath>
 #include <iostream>
+#include <iomanip>
+
+using namespace std;
 
 #define VACANT 1
 #define RED 2
@@ -15,8 +17,6 @@ using namespace std;
 #define ISBLACK(x) (x== BKING || x == BLACK)
 #define ISVACANT(x) (x ==1)
 
-int board[][];
-int i;
 
 void printBoard(int board[][COL]);
 char printPieces(int i);
@@ -30,16 +30,23 @@ void printBoard (int board[][COL])
     
     for (l=0; l<ROW; ++l)
     {
-        cout << "%board I" << (l+1));
+        cout << setw(1) << l+1;
         for (m=0; m<COL; ++m)
         {
-            cout << " %x I" << printPieces(board[l][m]);
+        	if ((l%2)==0) {
+            cout << setw(3) << printPieces(board[l][m]) << " ";
+            }
+            else {
+            for (m=0; m<COL-1; ++m) {
+             cout << setw(3) << printPieces(board[l][m]) << " ";
+            }
+        }
         }
         cout << "\n";
         cout << " x---x---x---x---x---x---x---x\n";
     }
     
-    cout << "    A   B   C   D   E   F   G   H\n";
+    cout << "  A   B   C   D   E   F   G   H\n";
 }
 
 char printPieces(int i)
@@ -47,7 +54,7 @@ char printPieces(int i)
 	switch(i)
 	{
 	case 0:
-		return '#';
+		return 'o';
 	case 1: 
 		return ' ';
 	case 2:
@@ -58,9 +65,9 @@ char printPieces(int i)
 	return ('X');
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	//TODO
-	int board[ROW][COL] = 
+	int board[ROW][COL]= 
 	{
 	{2,1,2,1,2,1,2,1},
 	{1,2,1,2,1,2,1,2},
@@ -70,10 +77,13 @@ int main(int argc, char *argv[]) {
 	{1,3,1,3,1,3,1,3},
 	{3,1,3,1,3,1,3,1},
 	{1,3,1,3,1,3,1,3},
-	}
-	return 0;
+	};
 	
- 	while(true) {
+ 	for(int i=0; i<1; i++) {
  		printBoard(board);
  	}
+ 	getchar();
+ 	getchar();
+ 	return 0;
+	
 }
