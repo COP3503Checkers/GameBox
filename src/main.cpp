@@ -34,6 +34,5 @@ char pieceprints(int i)
 
 int main(int argc, char *argv[]) {
 	//TODO
-	#define
 	return 0;
 }
