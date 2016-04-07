@@ -8,11 +8,28 @@ using namespace std;
 #define RKING 4
 #define BKING 5
 
-#define
-#define
+#define ISRED(x) (x == RKING || x == RED)
+#define ISBLACK(x) (x== BKING || x == BLACK)
+#define ISVACANT(x) (x ==1)
 
 #define ROW 10
 #define COL 10
+
+char pieceprints(int i)
+{
+	switch(i)
+	{
+	case 0:
+		return ' ';
+	case 1: 
+		return ' ';
+	case 2:
+		return 'R';
+	case 3:
+		return 'B';
+	}
+	return ('X');
+}
 
 
 int main(int argc, char *argv[]) {
