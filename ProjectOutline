@@ -1,0 +1,80 @@
+Team Project
+
+Definition:
+
+The program is a checkers game for two players. It is a simple game for people to enjoy, as well as an opportunity for the team members to learn the first steps to making a computer game.
+
+Analysis:
+
+Inputs
+Users will be shown “coordinates” on the checkerboard and the inputs will be what piece that the user chooses to move and what space on the board the user wants to move their piece to.
+Available commands are the user’s choice of where to move the checkers pieces and what piece to use.  Player can do multiple jumps one step at a time if there are opponent pieces that are able to be jumped over. 
+The format of the input data will be what coordinates the pieces will move from and to (taken in as a string variable). 
+
+Outputs
+The output for the program is the movement of the pieces on the checkerboard. Whenever a player checker piece jumps over an opponent's piece then the opponent's piece will disappear. Also, the amount of checker piece that a player has collected will be displayed on the side of the checkerboard. When someone wins the game, there will be displayed a winning sign. When a player’s checker piece gets to the opposite side of the board then the piece will increase in size to symbolize that it is now a king checker piece. You will take a checker piece that you lost before and get it returned on top of your king piece. When the user does not try to follow the constraints then a error message will be displayed telling them what is wrong. The ncurses library will be used to allow the pieces of one player to be the color black and the other player’s pieces to be red to differentiate between players. 
+
+Constraints
+User must choose movements that checker pieces are allowed to make (move only diagonally), so user’s choice of coordinates must be checked before any movement of pieces is done
+To begin, user must choose a space in which their own piece is already in 
+User can only choose 1 checkers piece at a time to move 
+User can not move over their own piece
+User’s checkers piece cannot move into a space where there already is a piece 
+User must choose a space that exists on the board 
+Two user’s pieces cannot be in one space unless the piece is a king piece
+Checker pieces can only be moved to certain spaces on the board (two pieces will never be directly next to each other as pieces can only be on every other space)
+
+Assumptions
+Must assume users know how checkers pieces move
+
+Modifications
+Whenever a user inputs data for them to be able to move their checkers piece, the coordinates variable of the checkers piece object will change, which will be shown in the checkerboard as the piece moves to a new location. 
+
+Relationships/Effects 
+The change in the checkers piece’s location on the checkerboard is related to the constraints on where the user can choose to move the piece. Only one piece per user can be modified at one time and checker pieces can only be moved to certain spaces on the board (two pieces will never be directly next to each other as pieces can only be on every other space). The pieces cannot be move off of the checkerboard. The pieces (objects) can only be modified if there are no conflicts with the constraints and the modifications to be objects will be shown on the checkerboard. 
+
+Design: 
+
+Our modules will be one for input, one for output, and one for controlling gameplay. Classes include checker pieces and board. Methods can include the output for visuals (originally just characters in terminal but a GUI if needed), the movement method for turning user input into onscreen action, and a method for the tallying of scores. The two players pieces are distinguished with a “R” or “B” and if it becomes a king then “RK” or “BK”. The amount of checkers pieces that the player has taken are going to be displayed on the side with the score. The checkerboard will be squares in a square box with the letters representing the pieces. This board will be represented in source code as a 2D char array.
+
+UML: 
+
+
+
+
+Execution Plan:
+
+The best way to divide up the coding is by assigning different classes to different members. For example, each programming student could take on coding a different class or element. The makefile would look like a checkerboard window, allowing user input via a box below the board. 
+
+April 1: Coded board and static pieces
+
+ April 8: Coded king pieces and one user movement
+
+April 15: Coded two-user input, rough draft of final game (last deadline)
+
+April 18: Submission
+
+Splitting up the work
+
+Bryan: Action of moving the pieces for two users 
+	Done by around Friday the 8th or Sat the 9th
+
+Alex: Putting it all together (make it pretty, put a menu in, and saying winner)
+	Due by Sunday 17th
+
+Cristo: Constraints 
+	Done by around Friday 15th
+
+Donovan: Create the output board and pieces (make a grid with A- and 1-) (R and B)
+	Done by around Tuesday the 5th
+
+Shiming: Account for the king pieces and eliminating pieces that are jumped over. (Keep track of how many pieces were taken and double jumps)
+	Done by around Tuesday the 12th
+
+
+
+Create the output board and pieces
+Action of moving the pieces for two users 
+Account for the king pieces and eliminating pieces that are jumped over
+Contriants
+Putting it all together (make it pretty and put a menu in)
