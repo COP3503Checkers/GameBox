@@ -45,8 +45,7 @@ void printBoard (int board[][COL])
         cout << "\n";
         cout << " x---x---x---x---x---x---x---x\n";
     }
-    
-    cout << "  A   B   C   D   E   F   G   H\n";
+    cout << "   A   B   C   D   E   F   G  \n";
 }
 
 char printPieces(int i)
