@@ -62,5 +62,10 @@ bool isForward(const BoardPos& i, const BoardPos& f) {
 	else if(isBlack(*i)) return f.r < i.r;
 	return false;
 }
+bool isAtEnd(const BoardPos& p) {
+	if(isVacant(*p)) return false;
+	if(isRed(*p)) return p.r == 0;
+	return p.r == ROW - 1;
+}
 
 #endif
