@@ -73,11 +73,12 @@ void printBoard() {
 	for(int l = 0; l < ROW; ++l) {
 		std::cout << std::setw(1) << l + 1;
 		for(int m = 0; m < COL; ++m)
-			std::cout << std::setw(2) << pieceRep(*BoardPos(l, m)); //hahaha >:D
-		std::cout << "\n";
+			std::cout << std::setw(2) << pieceRep(*BoardPos(l, m));
+		std::cout << std::endl;
 	}
-	std::cout << "  A B C D E F G H\n";
-	std::cout << std::endl;
+	std::cout << "  A B C D E F G H" << std::endl;
+	std::cout << "# Reds Taken = " << 24 - numRedsAlive << std::endl;
+	std::cout << "# Blacks Taken = " << 24 - numBlacksAlive << std::endl;
 }
 #else
 void printBoard() {
@@ -85,9 +86,8 @@ void printBoard() {
 	for(int l = 0; l < ROW; ++l) {
 		std::cout << std::setw(1) << l + 1;
 		for(int m = 0; m < COL; ++m)
-		std::cout << std::setw(4) << pieceRep(*(l[board] + m)); //hahaha >:D
-		std::cout << "\n";
-		std::cout << " x---x---x---x---x---x---x---x---x\n";
+		std::cout << std::setw(4) << pieceRep(*BoardPos(l, m));
+		std::cout << "\n x---x---x---x---x---x---x---x---x\n";
 	}
 	std::cout << "    A   B   C   D   E   F   G   H\n";
 }
@@ -116,17 +116,17 @@ void moveCheck(const BoardPos& i, const BoardPos& f) {
 	if(!isForward(i, f)) throw input_error("can only move forward");
 }
 
-//check if midpoint is complement and f is vacant
-bool jumpCheck(const BoardPos& i, const BoardPos& f) {
-	return 0 <= f.r && f.r < ROW && 0 <= f.c && f.c < COL && isOpposite(*i, *(i / f)) && isVacant(*f) && isForward(i, f);
-}
-
 std::vector<BoardPos> getValidJumps(const BoardPos& p) {
 	const BoardPos main(2, 2), anti(2, -2);
 	BoardPos f[] = { p + main, p - anti, p - main, p + anti };
 	std::vector<BoardPos> ret;
-	for(unsigned i = 0; i < 4; ++i)
-		if(jumpCheck(p, i[f])) ret.push_back(f[i]);
+	for(unsigned i = 0; i < 4; ++i) {
+		try {
+			moveCheck(p, i[f]);
+			ret.push_back(f[i]);
+		} catch(const std::exception& e) {
+		}
+	}
 	return ret;
 }
 
@@ -150,8 +150,10 @@ BoardPos jumpFrom(const BoardPos& p) {
 	BoardPos jump = valid[0];
 	if(valid.size() != 1) {
 		jump = BoardPos(-1, -1);
-		while(!jumpCheck(p, jump))
+		bool move = false;
+		while(!move)
 			try { //TODO: implement lambda for try/catch
+				moveCheck(p, jump);
 				jump = getPos("Where would you like to jump to?\n");
 			} catch(const std::exception& e) {
 				std::cout << "Error: " << e.what() << "\n";
@@ -159,6 +161,7 @@ BoardPos jumpFrom(const BoardPos& p) {
 	}
 	*(p / jump) = VACANT;
 	std::swap(*p, *jump);
+	if(isAtEnd(p)) *p = toKing(*p);
 	return jump;
 }
 
@@ -167,17 +170,18 @@ bool movePiece(const BoardPos& i, const BoardPos& f) {
 	if((f - i).r == 1) {
 		std::swap(*i, *f);
 		blackTurn = !blackTurn;
+		if(isAtEnd(f)) *f = toKing(*f);
 		return false;
 	}
-	*(i / f) = VACANT;
-	std::swap(*i, *f);
 	if(isRed(*(i / f))) --numRedsAlive;
 	else --numBlacksAlive;
-	jumpFrom(f);
+	*(i / f) = VACANT;
+	std::swap(*i, *f);
+	if(isAtEnd(f)) *f = toKing(*f);
 	return true;
 }
 
-bool movePiece(const ifpos_pair_type& p) {
+inline bool movePiece(const ifpos_pair_type& p) {
 	return movePiece(p.first, p.second);
 }
 
