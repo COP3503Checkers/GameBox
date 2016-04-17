@@ -28,5 +28,8 @@ bool isMatching(int a, int b) {
 bool isOpposite(int a, int b) {
 	return isRed(a) ? isBlack(b) : (isBlack(a) ? isRed(b) : false);
 }
+int toKing(int x) {
+	return isRed(x) ? RKING : (isBlack(x) ? BKING : VACANT);
+}
 
 #endif
