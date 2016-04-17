@@ -79,6 +79,7 @@ void printBoard() {
 	std::cout << "  A B C D E F G H" << std::endl;
 	std::cout << "# Reds Taken = " << 24 - numRedsAlive << std::endl;
 	std::cout << "# Blacks Taken = " << 24 - numBlacksAlive << std::endl;
+	std::cout << (blackTurn ? "Black" : "Red") << "'s turn!" << std::endl;
 }
 #else
 void printBoard() {
@@ -144,7 +145,10 @@ BoardPos jumpFrom(const BoardPos& p) {
 		while(c != 'y') {
 			std::string s;
 			std::cin >> s;
-			if((c = std::tolower(s[0])) == 'n') return p;
+			if((c = std::tolower(s[0])) == 'n') {
+				blackTurn = !blackTurn;
+				return p;
+			}
 		}
 	}
 	BoardPos jump = valid[0];
@@ -167,7 +171,7 @@ BoardPos jumpFrom(const BoardPos& p) {
 
 bool movePiece(const BoardPos& i, const BoardPos& f) {
 	moveCheck(i, f);
-	if((f - i).r == 1) {
+	if(std::abs((f - i).r) == 1) {
 		std::swap(*i, *f);
 		blackTurn = !blackTurn;
 		if(isAtEnd(f)) *f = toKing(*f);
@@ -198,7 +202,6 @@ BoardPos getPos(const char* msg) {
 
 //Ask the user what pieces they want to move
 ifpos_pair_type getPosPair() {
-	std::cout << (blackTurn ? "Black" : "Red") << "'s turn!\n";
 	BoardPos i = getPos("What piece do you want to move?\n");
 	BoardPos f = getPos("Where do want to move it to?\n");
 	return ifpos_pair_type(i, f);
