@@ -14,6 +14,7 @@
 #include "checkers.h"
 #include "boardpos.h"
 #include "inputerror.h"
+#include "connectfour.h"
 
 //using namespace std;
 
@@ -247,64 +248,109 @@ std::string getPlayer2Name(){
 
 int main() {
     
-    int choice = 0;
+    int checkersChoice = 0;
+    int connectChoice = 0;
+    int gameChoice = 0;
     
     do{
-    
-    std::cout<<"Welcome to Checkers!";
-    std::cout<<std::endl;
-    std::cout<<"1. Choose names of players";
-    std::cout<<std::endl;
-    std::cout<<"2. How To Play";
-    std::cout<<std::endl;
-    std::cout<<"3. Play";
-    std::cout<<std::endl;
-    std::cout<<"4. Exit";
-    std::cout<<std::endl;
-        
-        std::cin>>choice;
-    
-    while(choice == 1){
-        std::string name1;
-        std::string name2;
-        int playerChoice;
-        std::cout<<player1; std::cout<<" is Red. "; std::cout<<player2; std::cout<<" is Black. Which player name would you like to change? 1 or 2? Choose 0 to exit.";
+        std::cout<<"Welcome to our Game Box!";
         std::cout<<std::endl;
-        std::cin>>playerChoice;
-        if(playerChoice == 1){
-            std::cout<<"What would you like to change Player 1's name to?";
-            std::cout<<std::endl;
-            std::cin>>name1;
-            setPlayer1Name(name1);
+        std::cout<<"1. Play Checkers";
+        std::cout<<std::endl;
+        std::cout<<"2. Play Connect 4";
+        std::cout<<std::endl;
+        std::cout<<"3. Exit";
+        std::cout<<std::endl;
+        
+        std::cin>>gameChoice;
+        
+        if(gameChoice == 1){
+            do{
+                
+                std::cout<<"Welcome to Checkers!";
+                std::cout<<std::endl;
+                std::cout<<"1. Choose names of players";
+                std::cout<<std::endl;
+                std::cout<<"2. How To Play";
+                std::cout<<std::endl;
+                std::cout<<"3. Play";
+                std::cout<<std::endl;
+                std::cout<<"4. Exit";
+                std::cout<<std::endl;
+                
+                std::cin>>checkersChoice;
+                
+                while(checkersChoice == 1){
+                    std::string name1;
+                    std::string name2;
+                    int playerChoice;
+                    std::cout<<player1; std::cout<<" is Red. "; std::cout<<player2; std::cout<<" is Black. Which player name would you like to change? 1 or 2? Choose 0 to exit.";
+                    std::cout<<std::endl;
+                    std::cin>>playerChoice;
+                    if(playerChoice == 1){
+                        std::cout<<"What would you like to change Player 1's name to?";
+                        std::cout<<std::endl;
+                        std::cin>>name1;
+                        setPlayer1Name(name1);
+                    }
+                    if(playerChoice == 2){
+                        std::cout<<"What would you like to change Player 2's name to?";
+                        std::cout<<std::endl;
+                        std::cin>>name2;
+                        setPlayer2Name(name2);
+                    }
+                    if(playerChoice == 0){
+                        break;
+                    }
+                    if(playerChoice != 1 && playerChoice != 2 && playerChoice != 0){
+                        std::cout<<"Invalid Choice. Please choose 1 or 2.";
+                        std::cout<<std::endl;
+                        std::cout<<std::endl;
+                    }
+                }
+                if(checkersChoice == 2){
+                    std::cout<<"This is a 2 player game of Checkers. Once the game begins, "; std::cout<<player1; std::cout<<" has the red pieces and "; std::cout<<player2; std::cout<<" has the black pieces. In order to move your pieces, simply type what row and column the piece is in and what row and column to move the piece to. Be sure to type the column letter first, then the row number. For example: A1 or D6. You can only move pieces diagonally forward, until you become a King piece and can move backwards. You become a King piece by getting to your opponent's side of the board. Have fun and good luck!";
+                    std::cout<<std::endl;
+                    std::cout<<std::endl;
+                }
+                if(checkersChoice == 3){
+                    initBoard();
+                    while(numRedsAlive && numBlacksAlive)
+                        play();
+                    std::cout << "Winner: " << (!numBlacksAlive ? "Black" : "Red");
+                }
+                if(checkersChoice == 4){
+                    break;
+                }
+            }while(checkersChoice == 1 || checkersChoice == 2 || checkersChoice == 3);
         }
-        if(playerChoice == 2){
-            std::cout<<"What would you like to change Player 2's name to?";
+        if(gameChoice == 2){
+            
+            do{
+            
+            std::cout<<"Welcome to Connect Four!";
             std::cout<<std::endl;
-            std::cin>>name2;
-            setPlayer2Name(name2);
+            std::cout<<"1. Play";
+            std::cout<<std::endl;
+            std::cout<<"2. Exit";
+            std::cout<<std::endl;
+            
+            std::cin>>connectChoice;
+            
+            if(connectChoice == 1){
+            con4::initBoard();
+            while(con4::isVacant(con4::winner()))
+                con4::play();
+            con4::printBoard();
+            std::cout << "Winner: " << (con4::isBlackTurn ? "Red" : "Black") << std::endl;
+            }
+            if(connectChoice == 2){
+                break;
+            }
+            }while(connectChoice == 1);
         }
-        if(playerChoice == 0){
+        if(gameChoice == 3){
             break;
         }
-        if(playerChoice != 1 && playerChoice != 2 && playerChoice != 0){
-            std::cout<<"Invalid Choice. Please choose 1 or 2.";
-            std::cout<<std::endl;
-            std::cout<<std::endl;
-        }
-    }
-    if(choice == 2){
-        std::cout<<"This is a 2 player game of Checkers. Once the game begins, "; std::cout<<player1; std::cout<<" has the red pieces and "; std::cout<<player2; std::cout<<" has the black pieces. In order to move your pieces, simply type what row and column the piece is in and what row and column to move the piece to. Be sure to type the column letter first, then the row number. For example: A1 or D6. You can only move pieces diagonally forward, until you become a King piece and can move backwards. You become a King piece by getting to your opponent's side of the board. Have fun and good luck!";
-        std::cout<<std::endl;
-        std::cout<<std::endl;
-    }
-    if(choice == 3){
-        initBoard();
-        while(numRedsAlive && numBlacksAlive)
-            play();
-        std::cout << "Winner: " << (!numBlacksAlive ? "Black" : "Red");
-    }
-    if(choice == 4){
-        break;
-    }
-    }while(choice != 4);
+    }while(gameChoice == 1 || gameChoice == 2);
 }
