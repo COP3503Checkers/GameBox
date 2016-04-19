@@ -1,14 +1,15 @@
 #ifndef CHECKERS_H_
 #define CHECKERS_H_
 
-#define VACANT 0
-#define RED 1
-#define BLACK -1
-#define RKING 2
-#define BKING -2
+const int VACANT = 0;
+const int RED = 1;
+const int BLACK = -1;
+const int RKING = 2;
+const int BKING = -2;
 
-#define ROW 8
-#define COL 8
+
+const int ROW = 8;
+const int COL = 8;
 
 bool isRed(int x) {
 	return x == RKING || x == RED;
