@@ -4,14 +4,17 @@
 namespace con4 {
 
 //defined as const variables instead of #define
-//to avoid problems with multiple declarations
+// to avoid problems with multiple declarations
+//constants here
 const int VACANT = 0;
 const int RED = 1;
 const int BLACK = -1;
 
+//board dimensions
 const int ROW = 6;
 const int COL = 7;
 
+//helper functions, inline these if necessary
 bool isRed(int x) {
 	return x == RED;
 }
@@ -21,6 +24,7 @@ bool isBlack(int x) {
 bool isVacant(int x) {
 	return x == VACANT;
 }
+//return if both a and b are on same/opposite side, respectively
 bool isMatching(int a, int b) {
 	return isRed(a) ? isRed(b) : (isBlack(a) ? isBlack(b) : false);
 }
@@ -35,17 +39,25 @@ bool isOpposite(int a, int b) {
 
 namespace con4 {
 
+//object representation of board position
+//only allows 1 board per run due to static int **board
 struct BoardPos {
+	//pointer to board as a 2d int array
 	static int **board;
 
+	//position represented by two ints
+	//change to unsigned?
 	int r, c;
-
+	
+	//constructors
 	BoardPos()
 			: r(), c() {
 	}
 	BoardPos(int r, int c)
 			: r(r), c(c) {
 	}
+	
+	//copy constructor and equals overload
 	BoardPos(const BoardPos& p)
 			: r(p.r), c(p.c) {
 	}
@@ -53,13 +65,19 @@ struct BoardPos {
 		r = p.r, c = p.c;
 		return *this;
 	}
-
+	
+	//return value of piece on board
+	//because *BoardPos(1,2) looks nicer than board[1][2]?
+	//lol get outta here
 	int& operator*() {
 		return board[r][c];
 	}
 	int& operator*() const {
 		return board[r][c];
 	}
+	
+	//position arithmetic
+	//treats position as a vector
 	BoardPos operator-() const {
 		return BoardPos(-r, -c);
 	}
@@ -75,14 +93,18 @@ struct BoardPos {
 	BoardPos& operator-=(const BoardPos& p) {
 		return *this = (*this - p);
 	}
-	//midpoint
+	
+	//midpoint of this and p
 	BoardPos operator/(const BoardPos& p) const {
 		return BoardPos((r + p.r) / 2, (c + p.c) / 2);
 	}
+	
 	bool operator==(const BoardPos& p) const {
 		return r == p.r && c == p.c;
 	}
 };
+
+//just to be pedantic
 int **BoardPos::board = NULL;
 
 typedef std::pair<BoardPos, BoardPos> ifpos_pair_type;
@@ -106,6 +128,7 @@ char pieceRep(int i) {
 	return ' ';
 }
 
+//output board representation to cout
 void printBoard() {
 	std::cout << "+---+---+---+---+---+---+---+\n";
 	for(int l = 0; l < ROW; ++l) {
@@ -116,37 +139,53 @@ void printBoard() {
 	std::cout << "  1   2   3   4   5   6   7\n";
 }
 
+//the board with int values being manipulated as the game progresses
 int **board = NULL;
+//the default board
 const int INITBOARD[ROW][COL] = { { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT } };
+//flag for whether it's black's turn
+//isBlackTurn = !isBlackTurn to flip turns
 bool isBlackTurn = false;
 
 //delete old board and make new board
 void initBoard() {
+	//delete old board
 	if(board != NULL) {
 		for(int i = 0; i < ROW; ++i)
 			delete board[i];
 		delete board;
 	}
+	//and...
+	//make new board
 	board = new int*[ROW];
 	for(int i = 0; i < ROW; ++i) {
 		board[i] = new int[COL];
 		for(int j = 0; j < COL; ++j)
 			board[i][j] = INITBOARD[i][j];
 	}
+	//set pointer in BoardPos to the new board
+	//30 minutes of debugging >.>
 	BoardPos::board = board;
 }
 
 //put a piece into column numbered c
 //columns are indexed from 0
+//returns whether drop was successful
 bool dropPiece(unsigned c) {
+	//get first unfilled space going down in the column
 	unsigned i = 0;
 	if(c > ROW) return 0;
 	while(i < ROW && isVacant(*BoardPos(i, c)))
 		++i;
+	//column is completely filled, return unsuccessful
 	if(i == 0) return false;
+	//go back up to unfilled slot
 	--i;
-	if(isBlackTurn) *BoardPos(i, c) = BLACK;
-	else *BoardPos(i, c) = RED;
+	//fill the slot and flip turns
+	if(isBlackTurn)
+		*BoardPos(i, c) = BLACK;
+	else
+		*BoardPos(i, c) = RED;
 	isBlackTurn = !isBlackTurn;
 	return true;
 }
@@ -154,17 +193,24 @@ bool dropPiece(unsigned c) {
 //go through one turn
 void play() {
 	int c;
+	
 	printBoard();
 	std::cout << (isBlackTurn ? "Black" : "Red") << "'s turn!" << std::endl;
+	
+	//get column
 	std::cout << "Where would you like to drop your piece? ";
+	//TODO: put this into its own function
 	while(!(std::cin >> c)) {
 		std::cin.clear();
 		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		std::cout << "Error: NaN, try again: ";
 	}
-	if(dropPiece(c - 1)) {
-		std::cout << "Congratulations" << std::endl;
-	} else std::cout << "That's not on the board!" << std::endl;
+	
+	//attempt to drop and display whether it was successful
+	if(dropPiece(c - 1))
+		std::cout << "Piece dropped successfully!" << std::endl;
+	else
+		std::cout << "That's not on the board!" << std::endl;
 }
 
 //return if position represented by p is within bounds
@@ -172,12 +218,20 @@ bool withinBounds(const BoardPos& p) {
 	return 0 <= p.r && p.r < ROW && 0 <= p.c && p.c < COL;
 }
 
+//return which side is the winner
+//returns VACANT if there is no winner
 int winner() {
 	typedef BoardPos b;
+	
+	//iterate through each slot and...
 	for(int i = 0; i < ROW; i++) {
 		for(int j = 0; j < COL; j++) {
 			b p(i, j), q;
-			if(isVacant(*p)) continue;
+			
+			//skip if slot is vacant
+			if(isVacant(*p))
+				continue;
+			//check along main diagonal
 			if(withinBounds(q = (p + b(1, 1))) && isMatching(*p, *q)) {
 				if(withinBounds(q = (p + b(2, 2))) && isMatching(*p, *q)) {
 					if(withinBounds(q = (p + b(3, 3))) && isMatching(*p, *q)) {
@@ -185,6 +239,7 @@ int winner() {
 					}
 				}
 			}
+			//check downwards
 			if(withinBounds(q = (p + b(1, 0))) && isMatching(*p, *q)) {
 				if(withinBounds(q = (p + b(2, 0))) && isMatching(*p, *q)) {
 					if(withinBounds(q = (p + b(3, 0))) && isMatching(*p, *q)) {
@@ -192,6 +247,7 @@ int winner() {
 					}
 				}
 			}
+			//check along anti-diagonal
 			if(withinBounds(q = (p + b(1, -1))) && isMatching(*p, *q)) {
 				if(withinBounds(q = (p + b(2, -2))) && isMatching(*p, *q)) {
 					if(withinBounds(q = (p + b(3, -3))) && isMatching(*p, *q)) {
@@ -199,6 +255,7 @@ int winner() {
 					}
 				}
 			}
+			//check rightwards
 			if(withinBounds(q = (p + b(0, 1))) && isMatching(*p, *q)) {
 				if(withinBounds(q = (p + b(0, 2))) && isMatching(*p, *q)) {
 					if(withinBounds(q = (p + b(0, 3))) && isMatching(*p, *q)) {
@@ -206,8 +263,10 @@ int winner() {
 					}
 				}
 			}
+			//upwards and leftwards check not needed
 		}
 	}
+	//no slots and directions produce winner
 	return VACANT;
 }
 
