@@ -7,6 +7,7 @@
 #include "player.h"
 #include "score.h"
 #include "health.h"
+#include "level.h"
 
 class Galaga: public QGraphicsView{
 public:
@@ -16,6 +17,7 @@ public:
     player * p;
     Score * score;
     Health * health;
+    Level * level;
 };
 
 #endif // GALAGA_H

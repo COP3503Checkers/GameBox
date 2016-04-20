@@ -5,8 +5,9 @@
 #include "galaga.h"
 #include <QBrush>
 #include <QImage>
-#include "gameover.h"
 #include <QDebug>
+#include <QMediaPlayer>
+
 
 Galaga::Galaga(QWidget*parent){
 
@@ -28,6 +29,11 @@ Galaga::Galaga(QWidget*parent){
     health = new Health();
     health->setPos(health->x(),health->y()+30);
     scene->addItem(health);
+
+    //create level
+    level = new Level();
+    level->setPos(400,700);
+    scene->addItem(level);
 
     //adding item to scene
     scene->addItem(p);
@@ -52,6 +58,11 @@ Galaga::Galaga(QWidget*parent){
     QTimer * timer = new QTimer();
     QObject::connect(timer,SIGNAL(timeout()),p,SLOT(spawn()));
     timer->start(2000);
+
+    //background music
+    QMediaPlayer * music = new QMediaPlayer();
+    music->setMedia(QUrl("qrc:/sounds/galaga.mp3"));
+    music->play();
 
     show();
 }

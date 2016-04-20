@@ -1,5 +1,6 @@
 #include "bullet.h"
 #include "enemy.h"
+#include "enemy2.h"
 #include "galaga.h"
 #include <QTimer>
 #include <QGraphicsScene>
@@ -39,10 +40,22 @@ void Bullet::move()
             delete this;
             return;
         }
+        if(typeid(*(colliding[i])) == typeid(EnemyTwo)){
+            //increases the score
+            galaga->score->increaseScore();
+
+            //remove both
+            scene()->removeItem(colliding[i]);
+            scene()->removeItem(this);
+            //delete both
+            delete colliding[i];
+            delete this;
+            return;
+        }
     }
 
     //move bullet up
-    setPos(x(),y()-10);
+    setPos(x(),y()-20);
     if (pos().y() < 0){
         scene()->removeItem(this);
         delete this;

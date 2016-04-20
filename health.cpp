@@ -29,12 +29,9 @@ void Health::decreaseHealth()
     if(health == 0){
         setPlainText(QString("GAME OVER!"));
         setFont(QFont("times",55));
-     /*   QList<QGraphicsItem*> list = galaga->items();
-        for(int i = 0; i<list.size();i++){
-            QGraphicsItem *g = list[i];
-            removeItem(g);
-            delete g; */
-
+        for(int i = 0, n = galaga->scene->items().size();i<n;i++){
+            galaga->scene->items()[i]->setEnabled(false);
+        }
     }
 }
 

@@ -1,9 +1,14 @@
 <RCC>
-    <qresource prefix="/sounds"/>
+    <qresource prefix="/sounds">
+        <file>laser.mp3</file>
+        <file>galaga.mp3</file>
+    </qresource>
     <qresource prefix="/images">
         <file>background.png</file>
         <file>player1.png</file>
         <file>bullet1.png</file>
         <file>enemy.png</file>
+        <file>enemy2.png</file>
+        <file>bullet2.png</file>
     </qresource>
 </RCC>
