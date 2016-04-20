@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 			QApplication a(argc, argv);
 			galaga = new Galaga();
 			galaga->show();
-			a.exec()
+			a.exec();
 			delete galaga;
 		}
 		
