@@ -120,6 +120,7 @@ int main(int argc, char *argv[]) {
 			galaga = new Galaga();
 			galaga->show();
 			a.exec()
+			delete galaga;
 		}
 		
 		//exit main menu
