@@ -116,12 +116,14 @@ int **BoardPos::board = NULL;
 
 typedef std::pair<BoardPos, BoardPos> ifpos_pair_type;
 
+//return if piece can move from i to f if the piece is not a king
 bool isForward(const BoardPos& i, const BoardPos& f) {
 	if(isKing(*i)) return true;
 	if(isRed(*i)) return f.r > i.r;
 	else if(isBlack(*i)) return f.r < i.r;
 	return false;
 }
+//return whether piece should be kinged
 bool isAtEnd(const BoardPos& p) {
 	if(isVacant(*p)) return false;
 	if(isRed(*p)) return p.r == 0;
@@ -172,9 +174,12 @@ std::string player2 = "Player 2";
 BoardPos getPos(const char*);
 ifpos_pair_type getPosPair();
 
+//the board with int values being manipulated as the game progresses
 int **board = NULL;
+//the default board
 const int INITBOARD[ROW][COL] = { { RED, VACANT, RED, VACANT, RED, VACANT, RED, VACANT }, { VACANT, RED, VACANT, RED, VACANT, RED, VACANT, RED }, { RED, VACANT, RED, VACANT, RED, VACANT, RED, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT, VACANT }, { VACANT, BLACK, VACANT, BLACK, VACANT, BLACK, VACANT, BLACK }, { BLACK, VACANT, BLACK, VACANT, BLACK, VACANT, BLACK, VACANT }, { VACANT, BLACK, VACANT, BLACK, VACANT, BLACK, VACANT, BLACK } };
 
+//delete old board and make new board
 void initBoard() {
     if(board != NULL) {
         for(int i = 0; i < ROW; ++i)
@@ -190,6 +195,7 @@ void initBoard() {
     BoardPos::board = checker::board;
 }
 
+//game win at numRedsAlive == 0 && numBlacksAlive == 0
 int numRedsAlive = 24;
 int numBlacksAlive = 24; //#BlackLivesMatter
 //flag for whether it's black's turn
@@ -217,6 +223,8 @@ char pieceRep(int i) {
 }
 
 #if PDEBUG
+//output board representation to cout
+//less extraneous crap so it fits into debugging window
 void printBoard() {
     for(int l = 0; l < ROW; ++l) {
         std::cout << std::setw(1) << l + 1;
@@ -230,6 +238,8 @@ void printBoard() {
     std::cout << (blackTurn ? player2 : player1) << "'s turn!" << std::endl;
 }
 #else
+//output board representation to cout
+//"pretty" version
 void printBoard() {
     std::cout << " x---x---x---x---x---x---x---x---x\n";
     for(int l = 0; l < ROW; ++l) {
@@ -242,6 +252,7 @@ void printBoard() {
 }
 #endif
 
+//return column number
 int columnFinder(const std::string& p) {
     int c = int(p[0]);
     if('A' <= c && c <= 'H') return c - 'A';
@@ -249,12 +260,15 @@ int columnFinder(const std::string& p) {
     return -1;
 }
 
+//check if move from i to f is valid
+//if not valid, throws input_error with respective error message
 void moveCheck(const BoardPos& i, const BoardPos& f) {
     BoardPos d(f - i);
     d.r = std::abs(d.r);
     d.c = std::abs(d.c);
 
     //time to play baseball
+    //throw errors if anything is wrong
     if(isVacant(*i)) throw input_error("can only move a red or black piece");
     if(!isMatching(*i, getTurn())) throw input_error("can only move your own piece");
     if(!isVacant(*f)) throw input_error("can only move to an empty space");
@@ -265,6 +279,7 @@ void moveCheck(const BoardPos& i, const BoardPos& f) {
     if(!isForward(i, f)) throw input_error("can only move forward");
 }
 
+//get all valid jumps form p
 std::vector<BoardPos> getValidJumps(const BoardPos& p) {
     const BoardPos main(2, 2), anti(2, -2);
     BoardPos f[] = { p + main, p - anti, p - main, p + anti };
@@ -279,14 +294,21 @@ std::vector<BoardPos> getValidJumps(const BoardPos& p) {
     return ret;
 }
 
+//jump from position p
+//used only when a move has already been made by the turn
 //code's a bit jumbled here
 //forgive me plz :c
 BoardPos jumpFrom(const BoardPos& p) {
-    auto valid = getValidJumps(p); //number of valid jumps from p
+    auto valid = getValidJumps(p); //vector of valid jumps from p
+   
+    //no valid jumps
     if(valid.size() == 0) {
         blackTurn = !blackTurn;
         return p;
     }
+    
+    //ask if player wants to continue to jump
+    //who wouldnt lol
     {
         std::cout << "Continue jumping? (Y/N)\n";
         char c = '\0';
@@ -299,32 +321,44 @@ BoardPos jumpFrom(const BoardPos& p) {
             }
         }
     }
+    
+    //get where the player wants to jump to then check if it's allowed
     BoardPos jump = valid[0];
     if(valid.size() != 1) {
         jump = BoardPos(-1, -1);
         bool move = false;
         while(!move)
             try { //TODO: implement lambda for try/catch
+            	//this should take care if whether it is a correct jump
+            	//vector::contains(jump) may or may not be better
                 moveCheck(p, jump);
                 jump = getPos("Where would you like to jump to?\n");
             } catch(const std::exception& e) {
                 std::cout << "Error: " << e.what() << "\n";
             }
     }
+    
+    //jump is allowed
     *(p / jump) = VACANT;
     std::swap(*p, *jump);
     if(isAtEnd(p)) *p = toKing(*p);
     return jump;
 }
 
+//move a piece from i to f
 bool movePiece(const BoardPos& i, const BoardPos& f) {
+    //validity check
     moveCheck(i, f);
+    
+    //not a jump
     if(std::abs((f - i).r) == 1) {
         std::swap(*i, *f);
         blackTurn = !blackTurn;
         if(isAtEnd(f)) *f = toKing(*f);
         return false;
     }
+    
+    //is a jump
     if(isRed(*(i / f))) --numRedsAlive;
     else --numBlacksAlive;
     *(i / f) = VACANT;
@@ -333,14 +367,18 @@ bool movePiece(const BoardPos& i, const BoardPos& f) {
     return true;
 }
 
+//helper function
 inline bool movePiece(const ifpos_pair_type& p) {
     return movePiece(p.first, p.second);
 }
 
+//get a position from the user, with the prompt msg displayed beforehand with no newlines
 BoardPos getPos(const char* msg) {
     std::cout << msg;
     std::string s;
     std::cin >> s;
+    
+    //basic checks on input before passing to moveCheck
     if(s.length() != 2) throw input_error("input length is not 2");
     int r = int(s[1]) - int('1'), c = columnFinder(s);
     if(c == -1) throw input_error("invalid column");
@@ -388,9 +426,6 @@ void setPlayer2Name(std::string name){
 std::string getPlayer2Name(){
     return player2;
 }
-
-
-
 
 } //namespace checker
 
