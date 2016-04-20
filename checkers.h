@@ -3,15 +3,21 @@
 
 namespace checker {
 
+//constants and stuff
+//hooray constants
+//const double PI = 3.2f;
+//>.>
 const int VACANT = 0;
 const int RED = 1;
 const int BLACK = -1;
 const int RKING = 2;
 const int BKING = -2;
 
+//board dimensions
 const int ROW = 8;
 const int COL = 8;
 
+//helper functions, inline these if necessary
 bool isRed(int x) {
 	return x == RKING || x == RED;
 }
@@ -24,12 +30,14 @@ bool isKing(int x) {
 bool isVacant(int x) {
 	return x == VACANT;
 }
+//return if both a and b are on same/opposite side, respectively
 bool isMatching(int a, int b) {
 	return isRed(a) ? isRed(b) : (isBlack(a) ? isBlack(b) : false);
 }
 bool isOpposite(int a, int b) {
 	return isRed(a) ? isBlack(b) : (isBlack(a) ? isRed(b) : false);
 }
+//make a piece the king of their respective color
 int toKing(int x) {
 	return isRed(x) ? RKING : (isBlack(x) ? BKING : VACANT);
 }
@@ -41,17 +49,25 @@ int toKing(int x) {
 
 namespace checker {
 
+//object representation of board position
+//only allows 1 board per run due to static int **board
 struct BoardPos {
+	//pointer to board as a 2d int array
 	static int **board;
 
+	//position represented by two ints
+	//change to unsigned?
 	int r, c;
 
+	//constructors
 	BoardPos()
 			: r(), c() {
 	}
 	BoardPos(int r, int c)
 			: r(r), c(c) {
 	}
+	
+	//copy constructor and equals overload
 	BoardPos(const BoardPos& p)
 			: r(p.r), c(p.c) {
 	}
@@ -60,12 +76,16 @@ struct BoardPos {
 		return *this;
 	}
 
+	//return value of piece on board
 	int& operator*() {
 		return board[r][c];
 	}
 	int& operator*() const {
 		return board[r][c];
 	}
+	
+	//position arithmetic
+	//treats position as a vector
 	BoardPos operator-() const {
 		return BoardPos(-r, -c);
 	}
@@ -81,14 +101,17 @@ struct BoardPos {
 	BoardPos& operator-=(const BoardPos& p) {
 		return *this = (*this - p);
 	}
-	//midpoint
+	
+	//midpoint of this and p
 	BoardPos operator/(const BoardPos& p) const {
 		return BoardPos((r + p.r) / 2, (c + p.c) / 2);
 	}
+	
 	bool operator==(const BoardPos& p) const {
 		return r == p.r && c == p.c;
 	}
 };
+//just to be pedantic
 int **BoardPos::board = NULL;
 
 typedef std::pair<BoardPos, BoardPos> ifpos_pair_type;
@@ -169,13 +192,16 @@ void initBoard() {
 
 int numRedsAlive = 24;
 int numBlacksAlive = 24; //#BlackLivesMatter
-
+//flag for whether it's black's turn
+//BlackTurn = !BlackTurn to flip turns
 bool blackTurn = false;
 
+//this shouldnt really be necessary, blackTurn is already boolean, lol
 int getTurn() {
     return blackTurn ? BLACK : RED;
 }
 
+//return char representation of how pieces should be displayed
 char pieceRep(int i) {
     switch(i) {
         case RED:
