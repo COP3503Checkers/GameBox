@@ -7,7 +7,12 @@
 #include "checkers.h"
 #include "connectfour.h"
 
-int main() {
+#include <QApplication>
+#include "galaga.h"
+
+Galaga * galaga;
+
+int main(int argc, char *argv[]) {
 	//selected option under checkers menu
 	int checkersChoice = 0;
 	//selected option under connect four menu
@@ -20,7 +25,8 @@ int main() {
 		std::cout << "Welcome to our Game Box!" << std::endl;
 		std::cout << "1. Play Checkers" << std::endl;
 		std::cout << "2. Play Connect 4" << std::endl;
-		std::cout << "3. Exit" << std::endl;
+		std::cout << "3. Play Galaga" << std::endl;
+		std::cout << "4. Exit" << std::endl;
 
 		std::cin >> gameChoice;
 
@@ -81,7 +87,7 @@ int main() {
 		if(checkersChoice == 4)
 			break;
 
-	} while(checkersChoice == 1 || checkersChoice == 2 || checkersChoice == 3); //move this to bottom? //nope
+	} while(checkersChoice == 1 || checkersChoice == 2 || checkersChoice == 3);
 
 		if(gameChoice == 2) do {
 			//connect4 menu
@@ -107,9 +113,17 @@ int main() {
 				break;
 
 		} while(connectChoice == 1);
-
+		
+		if(gameChoice == 3) {	
+			//galaga
+			QApplication a(argc, argv);
+			galaga = new Galaga();
+			galaga->show();
+			a.exec()
+		}
+		
 		//exit main menu
-		if(gameChoice == 3)
+		if(gameChoice == 4)
 			break;
-	} while(gameChoice == 1 || gameChoice == 2);
+	} while(gameChoice == 1 || gameChoice == 2 || gameChoice == 3);
 }
